@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('dept_id')->unsigned();
             $table->bigInteger('kpi_id')->unsigned();
             $table->bigInteger('realisation')->unsigned();
-            $table->decimal('score', total: 8, places: 2)->unsigned();
+            $table->decimal('score', total: 8, places: 2);
             // $table->date('kpi_date')->DATE_FORMAT(NOW(), '%Y-%m');
 
             $table->foreign('dept_id')->references('id')->on('departments');

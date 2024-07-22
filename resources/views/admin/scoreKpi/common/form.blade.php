@@ -53,6 +53,7 @@
                 </div>
                 <input type="hidden" name="kpis[{{ $kpi->id }}][weight]" class="form-control"  value={{ $kpi->weight }} readonly>
                 <input type="hidden" name="kpis[{{ $kpi->id }}][kpi_target]" class="form-control" value={{ $kpi->kpi_target }} readonly>
+                <input type="hidden" name="kpis[{{ $kpi->id }}][is_max]" class="form-control" value={{ $kpi->is_max }} readonly>
                 
                 {{-- @endif --}}
             @endforeach

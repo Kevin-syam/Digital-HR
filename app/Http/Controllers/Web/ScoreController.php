@@ -39,17 +39,17 @@ class ScoreController extends Controller
                 'name' =>  $request->name ?? null,
                 'department' => $request->department ?? null
             ];
-            $scoreSelect = ['*'];
+            $kpiSelect = ['*'];
+            $scoreSelect = ['dept_id', 'period', DB::raw('SUM(score) as total_score')];
             $with = ['department:id,dept_name'];
-            $kpi = $this->kpiRepo->getAllKpis($filterParameters,$with,);
-            // $postSelect = ['*'];
-            // $with = ['department:id,dept_name','employees:id,name,post_id,avatar'];
+            
             $departments = $this->departmentRepo->pluckAllDepartments();
             $score = $this->scoreKpiRepo->getAllScoreKpis($filterParameters,$with,$scoreSelect);
-            $kpis = $this->kpiRepo->getAllKpis($filterParameters,$with,$scoreSelect);
+            $detailedScores = $this->scoreKpiRepo->getDetailedScore('kpi');
+            $kpi = $this->kpiRepo->getAllKpis($filterParameters,$with,$kpiSelect);
             return view($this->view . 'index', compact('score','kpi',
                 'filterParameters',
-                'departments'));
+                'departments', 'detailedScores'));
         } catch (\Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }
@@ -105,6 +105,7 @@ class ScoreController extends Controller
                 'kpis.*.realisation' => 'required|numeric',
                 'kpis.*.weight' => 'required|numeric',
                 'kpis.*.kpi_target' => 'required|numeric',
+                'kpis.*.is_max' => 'required|numeric',
             ]);
 
             // return $validatedData;
@@ -113,11 +114,18 @@ class ScoreController extends Controller
             $period = $validatedData['period'] . '-01';
 
             foreach ($validatedData['kpis'] as $kpiId => $kpiData) {
+                $score = ($kpiData['realisation'] / $kpiData['kpi_target']) * $kpiData['weight'];
+
+                // If is_max false then its a cost
+                if (!$kpiData['is_max']) {
+                    $score = -$score;
+                }
+
                 ScoreKpi::create([
                     'kpi_id' => $kpiId,
                     'realisation' => $kpiData['realisation'],
-                    // 'score' => $kpiData['score'],
-                    'score' => ($kpiData['realisation']/$kpiData['kpi_target'])*$kpiData['weight'],
+                    'score' => $score,
+                    // 'score' => ($kpiData['realisation']/$kpiData['kpi_target'])*$kpiData['weight'],
                     'dept_id' => $validatedData['dept_id'],
                     'period' => $period
                 ]);

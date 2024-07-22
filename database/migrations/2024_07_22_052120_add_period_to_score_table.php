@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('score_kpis', function (Blueprint $table) {
             //
-            $table->date('period');
+            $table->date('period')->nullable();
         });
     }
 

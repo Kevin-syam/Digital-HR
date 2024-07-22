@@ -61,9 +61,10 @@
                         <tr>
                             <th>#</th>
                             <th>Department</th>
-                            <th>Key Perfomance Indicator </th>
+                            {{-- <th>Key Perfomance Indicator </th> --}}
                             <th class="text-center">Score</th>
                             <th class="text-center">Period</th>
+                            <th>Details</th>
 
                             @canany(['edit_post','delete_post'])
                                 <th class="text-center">Action</th>
@@ -74,12 +75,21 @@
                         <tr>
 
                         @forelse($score as $key => $value)
+                            @php
+                                $periodFormatted = \Carbon\Carbon::parse($value->period)->format('Y-m');
+                                $collapseId = 'details-' . $value->dept_id . '-' . $periodFormatted;
+                            @endphp
                             <tr>
                                 <td>{{++$key}}</td>
                                 <td>{{ucfirst($value->department->dept_name)}}</td>
-                                <td>{{ucfirst($value->kpi->kpi_desc)}}</td>
-                                <td>{{ucfirst($value->score)}}</td>
+                                {{-- <td>{{ucfirst($value->kpi->kpi_desc)}}</td> --}}
+                                <td>{{ucfirst($value->total_score)}}</td>
                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $value->period)->format('m-Y') }}</td>
+                                <td>
+                                    <button class="btn btn-primary" type="button" onclick="toggleDetails('{{ $collapseId }}')">
+                                        View Details
+                                    </button>
+                                </td>
 
                                 @canany(['edit_post','delete_post'])
                                     <td class="text-center">
@@ -87,7 +97,8 @@
 
                                         @can('edit_post')
                                             <li class="me-2">
-                                                <a href="{{route('admin.posts.edit',$value->id)}}">
+                                                {{-- <a href="{{route('admin.posts.edit',$value->id)}}"> --}}
+                                                <a href="">    
                                                     <i class="link-icon" data-feather="edit"></i>
                                                 </a>
                                             </li>
@@ -95,15 +106,52 @@
 
                                         @can('delete_post')
                                             <li>
-                                                <a class="deletePost"
-                                                   data-href="{{route('admin.posts.delete',$value->id)}}">
-                                                    <i class="link-icon"  data-feather="delete"></i>
+                                                {{-- <a class="deletePost"
+                                                   data-href="{{route('admin.posts.delete',$value->id)}}"> --}}
+                                                <a href=""></a>    
+                                                   <i class="link-icon"  data-feather="delete"></i>
                                                 </a>
                                             </li>
                                         @endcan
                                     </ul>
                                 </td>
                                 @endcanany
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="collapse" id="{{ $collapseId }}" style="display: none;">
+                                        <div class="card card-body">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>KPI Description</th>
+                                                        <th>Realisation</th>
+                                                        <th>Weight</th>
+                                                        <th>KPI Target</th>
+                                                        <th>Score</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if(isset($detailedScores[$value->dept_id . '-' . $value->period]))
+                                                        @foreach($detailedScores[$value->dept_id . '-' . $value->period] as $detail)
+                                                            <tr>
+                                                                <td>{{ $detail->kpi->kpi_desc }}</td>
+                                                                <td>{{ $detail->realisation }} {{ $detail->kpi->unit }}</td>
+                                                                <td>{{ $detail->kpi->weight }}</td>
+                                                                <td>{{ $detail->kpi->kpi_target }} {{ $detail->kpi->unit }}</td>
+                                                                <td>{{ $detail->score }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="4">No details available.</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
