@@ -78,7 +78,7 @@ class Department extends Model
 
     public function kpis()
     {
-        return $this->hasMany(Kpi::class,'dept_id','id')->select('id','post_name');
+        return $this->hasMany(Kpi::class,'dept_id','id')->select('id','kpi_desc','weight','kpi_target','unit','is_max');
     }
 
     public function employees(): \Illuminate\Database\Eloquent\Relations\HasMany

@@ -27,7 +27,7 @@
                 <div class="row align-items-center">
 
                     <div class="col-lg-2 mb-3">
-                        <h5>Kpi Report Lists</h5>
+                        <h5>Score Kpi Lists</h5>
                     </div>
 
                     <div class="col-lg-4 col-md-4 mb-3">
@@ -40,9 +40,9 @@
                         </select>
                     </div>
 
-                    <div class="col-lg-4 col-md-4 mb-3">
-                        <input type="text" placeholder="Search by Post name" name="name" value="{{$filterParameters['name']}}" class="form-control">
-                    </div>
+                    {{-- <div class="col-lg-4 col-md-4 mb-3">
+                        <input type="text" placeholder="Search by Departement name" name="name" value="{{$filterParameters['name']}}" class="form-control">
+                    </div> --}}
 
                     <div class="col-lg-2 col-md-4 d-flex">
                         <button type="submit" class="btn btn-block btn-secondary form-control me-md-2 me-0 mb-3">Filter</button>
@@ -60,10 +60,10 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Post Name</th>
-                            <th>Department </th>
-                            <th class="text-center">Total Employee</th>
-                            <th class="text-center">Status</th>
+                            <th>Department</th>
+                            <th>Key Perfomance Indicator </th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Period</th>
 
                             @canany(['edit_post','delete_post'])
                                 <th class="text-center">Action</th>
@@ -73,24 +73,13 @@
                         <tbody>
                         <tr>
 
-                        @forelse($posts as $key => $value)
+                        @forelse($score as $key => $value)
                             <tr>
                                 <td>{{++$key}}</td>
-                                <td>{{ucfirst($value->post_name)}}</td>
                                 <td>{{ucfirst($value->department->dept_name)}}</td>
-                                <td class="text-center">
-                                   <p class="btn btn-info btn-sm" id="showEmployee" data-employee="{{($value->employees)}}">
-                                       {{($value->employees_count)}}
-                                   </p>
-                                </td>
-
-                                <td class="text-center">
-                                    <label class="switch">
-                                        <input class="toggleStatus" href="{{route('admin.posts.toggle-status',$value->id)}}"
-                                               type="checkbox" {{($value->is_active) == 1 ?'checked':''}}>
-                                        <span class="slider round"></span>
-                                    </label>
-                                </td>
+                                <td>{{ucfirst($value->kpi->kpi_desc)}}</td>
+                                <td>{{ucfirst($value->score)}}</td>
+                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $value->period)->format('m-Y') }}</td>
 
                                 @canany(['edit_post','delete_post'])
                                     <td class="text-center">
@@ -131,7 +120,7 @@
         </div>
 
         <div class="dataTables_paginate">
-            {{$posts->appends($_GET)->links()}}
+            {{$score->appends($_GET)->links()}}
         </div>
 
         @include('admin.post.show')

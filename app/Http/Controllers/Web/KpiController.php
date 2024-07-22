@@ -77,8 +77,7 @@ class KpiController extends Controller
 
     public function getKPIs(Request $request)
     {
-        $departmentId = $request->input('department');
-        // Fetch KPIs from the database based on the selected department
+        $departmentId = $request->input('dept_name');
         $kpis = Kpi::where('department_id', $departmentId)->get();
         return response()->json($kpis);
     }

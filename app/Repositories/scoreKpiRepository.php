@@ -4,14 +4,14 @@ namespace App\Repositories;
 
 
 use App\Models\Post;
-use App\Models\Kpi;
+use App\Models\ScoreKpi;
 
-class KpiRepository
+class scoreKpiRepository
 {
 
-    public function getAllKpis($filterParameters,$with=[],$select=['*'])
+    public function getAllScoreKpis($filterParameters,$with=[],$select=['*'])
     {
-        return Kpi::select($select)
+        return ScoreKpi::select($select)
             ->with($with)
             ->when(isset($filterParameters['department']), function ($query) use ($filterParameters) {
                 $query->whereHas('department',function($subQuery) use ($filterParameters){
@@ -20,20 +20,20 @@ class KpiRepository
             })
             ->orderBy('dept_id')
             ->latest()
-            ->paginate(Kpi::RECORDS_PER_PAGE);
+            ->paginate(ScoreKpi::RECORDS_PER_PAGE);
     }
 
     // public function getAllKpisWithId($)
 
     public function store(array $validatedData)
     {
-        return Kpi::create($validatedData)->fresh();
+        return ScoreKpi::create($validatedData)->fresh();
     }
 
 
     public function getKpiById($id)
     {
-        return Kpi::where('id',$id)->first();
+        return ScoreKpi::where('id',$id)->first();
     }
 
     public function delete($kpiDetail)
@@ -47,9 +47,9 @@ class KpiRepository
     }
 
 
-    public function getAllActivePostsByDepartmentId($deptId,$with=[],$select=['*'])
+    public function getAllActiveScoreByDepartmentId($deptId,$with=[],$select=['*'])
     {
-        return Kpi::with($with)
+        return ScoreKpi::with($with)
             ->select($select)
             ->where('dept_id',$deptId)
             ->get();

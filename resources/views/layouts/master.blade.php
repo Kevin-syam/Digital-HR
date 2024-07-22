@@ -8,6 +8,7 @@
     <meta name="description" content="Digital HR Complete HR Attendance System">
     <meta name="author" content="Digital HR">
     <meta name="keywords" content="Digital HR">
+    
 
     <title>@yield('title')</title>
 

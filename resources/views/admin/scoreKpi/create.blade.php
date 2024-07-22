@@ -29,7 +29,7 @@
 
         <div class="card">
             <div class="card-body">
-                <form class="forms-sample" action="{{route('admin.posts.store')}}" enctype="multipart/form-data" method="POST">
+                <form class="forms-sample" action="{{route('admin.scoreKpi.store')}}" enctype="multipart/form-data" method="POST">
                     @csrf
                     @include('admin.scoreKpi.common.form')
                 </form>

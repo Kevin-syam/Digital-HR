@@ -9,13 +9,14 @@ class ScoreKpi extends Model
 {
     use HasFactory;
 
-    protected $table = 'scoreKpis';
+    protected $table = 'score_kpis';
 
     protected $fillable = [
         'kpi_id',
         'dept_id',
         'realisation',
         'score',
+        'period'
     ];
 
     const RECORDS_PER_PAGE = 10;
