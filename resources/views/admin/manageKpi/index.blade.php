@@ -68,10 +68,7 @@
                         <tr>
                             <th>#</th>
                             <th>Department</th>
-                            <th>KPI</th>
-                            <th>Weight</th>
-                            <th>Target</th>
-                            <th>Min/Max</th>
+                            <th>Detail</th>
 
                             @canany(['edit_department','delete_department'])
                                 <th class="text-center">Action</th>
@@ -82,21 +79,26 @@
                         <tr>
 
                         @forelse($kpis as $key => $value)
+                            @php
+                                // $periodFormatted = \Carbon\Carbon::parse($value->period)->format('Y-m');
+                                $collapseId = 'details-' . $value->dept_id;
+                            @endphp
                             <tr>
                                 <td>{{++$key}}</td>
                                 <td>{{ucfirst($value->department->dept_name)}}</td>
-                                <td>{{ucfirst($value->kpi_desc)}}</td>
-                                <td class="text-center">{{$value->weight}}</td>
-                                <td>{{$value->kpi_target}} {{$value->unit}}</td>
-                                <td class="text-center">{{$value->is_max ? 'max':'min'}}</td>
-                                
+                                <td>
+                                    <button class="btn btn-primary" type="button" onclick="toggleDetails('{{ $collapseId }}')">
+                                        View Details
+                                    </button>
+                                </td>
 
                                 @canany(['edit_kpi','delete_kpi'])
                                     <td class="text-center">
                                     <ul class="d-flex list-unstyled mb-0 justify-content-center">
                                         @can('edit_department')
                                             <li class="me-2">
-                                                <a href="{{route('admin.manageKpi.edit',$value->id)}}">
+                                                <a href="">
+                                                {{-- href="{{route('admin.manageKpi.edit',$value->departement->dept_id)}}"> --}}
                                                     <i class="link-icon" data-feather="edit"></i>
                                                 </a>
                                             </li>
@@ -105,7 +107,7 @@
                                         @can('delete_kpi')
                                             <li>
                                                 <a class="deleteBranch"
-                                                   data-href="{{route('admin.manageKpi.delete',$value->id)}}">
+                                                   data-href="{{route('admin.manageKpi.delete',$value->dept_id)}}">
                                                     <i class="link-icon"  data-feather="delete"></i>
                                                 </a>
                                             </li>
@@ -113,6 +115,40 @@
                                     </ul>
                                 </td>
                                 @endcanany
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="collapse" id="{{ $collapseId }}" style="display: none;">
+                                        <div class="card card-body">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>KPI Description</th>
+                                                        <th>Weight</th>
+                                                        <th>Target</th>
+                                                        <th>Cost</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if(isset($detailedScores[$value->dept_id]))
+                                                        @foreach($detailedScores[$value->dept_id] as $detail)
+                                                            <tr>
+                                                                <td>{{ $detail->kpi_desc }}</td>
+                                                                <td>{{ $detail->weight }} %</td>
+                                                                <td>{{ $detail->kpi_target }} {{ $detail->unit }}</td>
+                                                                <td class="text-center">{{$detail->is_max ? 'False':'True'}}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="4">No details available.</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -139,6 +175,15 @@
 
 @section('scripts')
     <script>
+        function toggleDetails(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
@@ -171,7 +216,7 @@
                 event.preventDefault();
                 let href = $(this).data('href');
                 Swal.fire({
-                    title: 'Are you sure you want to Delete Department ?',
+                    title: "Are you sure you want to Delete Department's Kpis ?",
                     showDenyButton: true,
                     confirmButtonText: `Yes`,
                     denyButtonText: `No`,

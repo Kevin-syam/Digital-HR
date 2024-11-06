@@ -50,13 +50,16 @@ class KpiController extends Controller
                 'name' =>  $request->name ?? null,
                 'department' => $request->department ?? null
             ];
-            $kpiSelect = ['*'];
+            $kpiSelect = ['dept_id'];
             $with = ['department:id,dept_name'];
             $departments = $this->departmentRepo->pluckAllDepartments();
             $kpis = $this->kpiRepo->getAllKpis($filterParameters,$with,$kpiSelect);
+            $detailedScores = $this->kpiRepo->getDetailedKpis('kpi');
             return view($this->view . 'index', compact('kpis',
                 'filterParameters',
-                'departments'));
+                'departments',
+                'detailedScores'            
+            ));
         } catch (Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }
@@ -80,6 +83,23 @@ class KpiController extends Controller
         $departmentId = $request->input('dept_name');
         $kpis = Kpi::where('department_id', $departmentId)->get();
         return response()->json($kpis);
+    }
+
+    public function edit($id)
+    {
+        $this->authorize('edit_kpis');
+        try{
+            // postRepo->getPostById($id)
+            $kpiDetail = $this->kpiRepo->getKpiByDeptId($id);
+            $with = [];
+            $select = ['id', 'dept_name'];
+            $departmentDetail = $this->departmentRepo->getAllActiveDepartments($with, $select);
+            return view($this->view.'edit',
+                compact('postDetail','departmentDetail')
+            );
+        }catch(\Exception $exception){
+            return redirect()->back()->with('danger', $exception->getMessage());
+        }
     }
 
 
@@ -132,14 +152,14 @@ class KpiController extends Controller
     {
         $this->authorize('delete_kpi');
         try {
-            $kpiDetail = $this->kpiRepo->getKpiById($id);
+            $kpiDetail = $this->kpiRepo->getKpiByDeptId($id);
             if (!$kpiDetail) {
                 throw new \Exception('KPI Detail Not Found', 404);
             }
             DB::beginTransaction();
-                $this->kpiRepo->delete($kpiDetail);
+                $this->kpiRepo->deleteMulti($kpiDetail);
             DB::commit();
-            return redirect()->back()->with('success', 'KPI Detail Deleted  Successfully');
+            return redirect()->back()->with('success', 'All KPI Detail for The Department Deleted Successfully');
         } catch (\Exception $exception) {
             DB::rollBack();
             return redirect()->back()->with('danger', $exception->getMessage());

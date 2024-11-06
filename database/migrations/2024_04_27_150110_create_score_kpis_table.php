@@ -21,8 +21,8 @@ return new class extends Migration
             $table->decimal('score', total: 8, places: 2);
             // $table->date('kpi_date')->DATE_FORMAT(NOW(), '%Y-%m');
 
-            $table->foreign('dept_id')->references('id')->on('departments');
-            $table->foreign('kpi_id')->references('id')->on('kpis');
+            $table->foreign('dept_id')->references('id')->on('departments')->onDelete('cascade');;
+            $table->foreign('kpi_id')->references('id')->on('kpis')->onDelete('cascade');;
             $table->timestamps();
         });
     }

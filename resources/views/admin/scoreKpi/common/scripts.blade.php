@@ -40,7 +40,7 @@
             event.preventDefault();
             let href = $(this).data('href');
             Swal.fire({
-                title: 'Are you sure you want to Delete Post ?',
+                title: 'Are you sure you want to Delete Scores ?',
                 showDenyButton: true,
                 confirmButtonText: `Yes`,
                 denyButtonText: `No`,

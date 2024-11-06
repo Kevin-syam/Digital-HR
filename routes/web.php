@@ -100,6 +100,7 @@ Route::group([
 
 
         /** scoreKpi route */
+        Route::get('score_kpis/delete/{dept_id}/{period}', [ScoreController::class, 'delete'])->name('scoreKpi.delete');
         Route::resource('scoreKpi', ScoreController::class);
         // Route::get('posts/toggle-status/{id}', [PostController::class, 'toggleStatus'])->name('posts.toggle-status');
         // Route::get('posts/delete/{id}', [PostController::class, 'delete'])->name('posts.delete');

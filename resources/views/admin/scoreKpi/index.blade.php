@@ -91,24 +91,25 @@
                                     </button>
                                 </td>
 
-                                @canany(['edit_post','delete_post'])
+                                @canany(['edit_score','delete_scores'])
                                     <td class="text-center">
                                     <ul class="d-flex list-unstyled mb-0 justify-content-center">
 
                                         @can('edit_post')
                                             <li class="me-2">
-                                                {{-- <a href="{{route('admin.posts.edit',$value->id)}}"> --}}
+                                                {{-- <a href="{{route('admin.posts.edit',$value->departement->dept_id)}}"> --}}
                                                 <a href="">    
                                                     <i class="link-icon" data-feather="edit"></i>
                                                 </a>
                                             </li>
                                         @endcan
 
-                                        @can('delete_post')
+                                        @can('delete_scores')
                                             <li>
-                                                {{-- <a class="deletePost"
-                                                   data-href="{{route('admin.posts.delete',$value->id)}}"> --}}
-                                                <a href=""></a>    
+                                                <a class="deletePost"
+                                                   data-href="{{route('admin.scoreKpi.delete',$value->dept_id,$value->period)}}">
+                                                   {{-- data-href="{{route('admin.scoreKpi.delete',$value->dept_id,$value->period)}}"> --}}
+                                                    
                                                    <i class="link-icon"  data-feather="delete"></i>
                                                 </a>
                                             </li>

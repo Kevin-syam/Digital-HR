@@ -18,6 +18,7 @@ class KpiRepository
                     $subQuery->where('id', $filterParameters['department']);
                 });
             })
+            ->groupBy('dept_id')
             ->orderBy('dept_id')
             ->latest()
             ->paginate(Kpi::RECORDS_PER_PAGE);
@@ -36,10 +37,21 @@ class KpiRepository
         return Kpi::where('id',$id)->first();
     }
 
+    public function getKpiByDeptId($id)
+    {
+        return Kpi::where('dept_id',$id)->get();
+    }
+
     public function delete($kpiDetail)
     {
         return $kpiDetail->delete();
     }
+
+    public function deleteMulti($kpiDetails)
+    {
+        return Kpi::whereIn('id', $kpiDetails->pluck('id'))->delete(); // Delete all KPIs by their IDs
+    }
+
 
     public function update($kpiDetail,$validatedData)
     {
@@ -53,6 +65,14 @@ class KpiRepository
             ->select($select)
             ->where('dept_id',$deptId)
             ->get();
+    }
+
+    public function getDetailedKpis($with){
+        return Kpi::with($with)
+        ->get()
+        ->groupBy(function ($item) {
+            return $item->dept_id;
+        });
     }
 
     // public function getAllKpisParam(array $with=[], array $select=['weight','target'])

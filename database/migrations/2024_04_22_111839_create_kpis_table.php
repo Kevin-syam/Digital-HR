@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('unit');
             $table->boolean('is_max')->default(1);
 
-            $table->foreign('dept_id')->references('id')->on('departments');
+            $table->foreign('dept_id')->references('id')->on('departments')->onDelete('cascade');
             $table->timestamps();
         });
     }

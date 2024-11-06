@@ -39,7 +39,7 @@ class ScoreController extends Controller
                 'name' =>  $request->name ?? null,
                 'department' => $request->department ?? null
             ];
-            $kpiSelect = ['*'];
+            $kpiSelect = ['dept_id'];
             $scoreSelect = ['dept_id', 'period', DB::raw('SUM(score) as total_score')];
             $with = ['department:id,dept_name'];
             
@@ -138,20 +138,24 @@ class ScoreController extends Controller
             DB::rollBack();
             return redirect()->back()->with('danger', $e->getMessage())->withInput();
         }
+    }
 
-
-        // foreach ($validatedData['kpi_desc'] as $index => $kpiDesc) {
-        //     $kpiData = [
-        //         'kpi_desc' => $kpiDesc,
-        //         'dept_id' => $validatedData['dept_id'][$index],
-        //         'weight' => $validatedData['weight'][$index],
-        //         'kpi_target' => $validatedData['kpi_target'][$index],
-        //         'unit' => $validatedData['unit'][$index],
-        //         'is_max' => $validatedData['is_max'][$index],
-        //     ];
-            
-        //     $this->kpiRepo->store($kpiData);
-        // }
+    public function delete($id,$period)
+    {
+        $this->authorize('delete_scores');
+        try {
+            $scoreDetail = $this->scoreKpiRepo->getScoreByDeptId($id,$period);
+            if (!$scoreDetail) {
+                throw new \Exception('Score Detail Not Found', 404);
+            }
+            DB::beginTransaction();
+                $this->scoreKpiRepo->deleteMulti($scoreDetail);
+            DB::commit();
+            return redirect()->back()->with('success', 'All Score Detail for The Department and The period Deleted Successfully');
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return redirect()->back()->with('danger', $exception->getMessage());
+        }
     }
 
 }
